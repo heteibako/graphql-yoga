@@ -11,18 +11,31 @@ export const postTypeDefs = /* GraphQL */ `
     title: String!
     content: String!
     imagePath: String
+    userId: String!
+    user: User
   }
   type Mutation {
-    addPost(title: String!, content: String!): Post!
+    addPost(title: String!, content: String!, userId: String!): Post!
     deletePost(id: ID!): String
   }
 `;
 
 export const postResolvers = {
   Query: {
-    posts: async () => await prisma.posts.findMany(),
+    posts: async () =>
+      await prisma.post.findMany({
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      }),
     post: async (_: unknown, args: { id: string }) => {
-      var result = await prisma.posts.findUnique({ where: { id: args.id } });
+      var result = await prisma.post.findUnique({ where: { id: args.id } });
       return result;
     },
   },
@@ -33,19 +46,26 @@ export const postResolvers = {
         title: string;
         content: string;
         imagePath?: string;
+        userId: string;
       }
     ) => {
-      const post = await prisma.posts.create({
+      const post = await prisma.post.create({
         data: {
           title: args.title,
           content: args.content,
           imagePath: args.imagePath || "",
+          // userId: args.userId,
+          user: {
+            connect: {
+              id: args.userId,
+            },
+          },
         },
       });
       return post;
     },
     deletePost: async (_: unknown, args: { id: string }) => {
-      await prisma.posts.delete({ where: { id: args.id } });
+      await prisma.post.delete({ where: { id: args.id } });
       return "User deleted";
     },
   },

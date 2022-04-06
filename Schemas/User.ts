@@ -1,4 +1,6 @@
-import { User } from "../models/User";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+const prisma = new PrismaClient();
 
 export const userTypeDefs = /* GraphQL */ `
   type Query {
@@ -10,6 +12,7 @@ export const userTypeDefs = /* GraphQL */ `
     email: String!
     name: String!
     password: String!
+    posts: [Post]
   }
   type Mutation {
     registerUser(email: String!, password: String!, name: String!): User!
@@ -19,9 +22,20 @@ export const userTypeDefs = /* GraphQL */ `
 
 export const userResolvers = {
   Query: {
-    users: async () => await User.find(),
+    users: async () =>
+      await prisma.user.findMany({
+        include: {
+          posts: {
+            select: {
+              id: true,
+              title: true,
+              content: true,
+            },
+          },
+        },
+      }),
     user: async (_: unknown, args: { id: string }) => {
-      var result = await User.findById(args.id);
+      var result = await prisma.user.findUnique({ where: { id: args.id } });
       return result;
     },
   },
@@ -34,12 +48,18 @@ export const userResolvers = {
         password: string;
       }
     ) => {
-      const user = await User.create(args);
-      await user.save();
+      const salt = await bcrypt.genSalt(10);
+      const user = await prisma.user.create({
+        data: {
+          name: args.name,
+          email: args.email,
+          password: await bcrypt.hash(args.password, salt),
+        },
+      });
       return user;
     },
     deleteUser: async (_: unknown, args: { id: string }) => {
-      await User.findByIdAndRemove(args.id);
+      await prisma.user.delete({ where: { id: args.id } });
       return "User deleted";
     },
   },

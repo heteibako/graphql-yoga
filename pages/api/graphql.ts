@@ -1,9 +1,7 @@
-import { userTypeDefs, userResolvers } from "./../../Schemas/User";
-import { postResolvers, postTypeDefs } from "./../../Schemas/Post";
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { createServer } from "@graphql-yoga/node";
 import { NextApiRequest, NextApiResponse } from "next";
-import connectDB from "../../config/db";
+import { schema } from "../../Schemas";
 
 const server = createServer<{
   req: NextApiRequest;
@@ -11,10 +9,7 @@ const server = createServer<{
 }>({
   cors: false,
   endpoint: "/api/graphql",
-  schema: {
-    typeDefs: [postTypeDefs, userTypeDefs],
-    resolvers: [postResolvers, userResolvers],
-  },
+  schema,
 });
 
 // connectDB();
