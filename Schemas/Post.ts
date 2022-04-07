@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
+
 export const postTypeDefs = /* GraphQL */ `
   type Query {
     post(id: ID!): Post
@@ -19,6 +19,16 @@ export const postTypeDefs = /* GraphQL */ `
     deletePost(id: ID!): String
   }
 `;
+
+prisma.$use(async (params, next) => {
+  console.log(params);
+
+  if (params.model == "Post" && params.action == "create") {
+    // Logic only runs for delete action and Post model
+    console.log("Post created");
+  }
+  return next(params);
+});
 
 export const postResolvers = {
   Query: {
@@ -54,7 +64,6 @@ export const postResolvers = {
           title: args.title,
           content: args.content,
           imagePath: args.imagePath || "",
-          // userId: args.userId,
           user: {
             connect: {
               id: args.userId,

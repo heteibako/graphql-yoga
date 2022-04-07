@@ -20,6 +20,20 @@ export const userTypeDefs = /* GraphQL */ `
   }
 `;
 
+prisma.$use(async (params, next) => {
+  console.log(params);
+
+  if (params.model == "User" && params.action == "create") {
+    // Logic only runs for delete action and Post model
+    params.args.data.password = await bcrypt.hash(
+      params.args.data.password,
+      10
+    );
+    console.log("User created");
+  }
+  return next(params);
+});
+
 export const userResolvers = {
   Query: {
     users: async () =>
@@ -53,7 +67,7 @@ export const userResolvers = {
         data: {
           name: args.name,
           email: args.email,
-          password: await bcrypt.hash(args.password, salt),
+          password: args.password,
         },
       });
       return user;
