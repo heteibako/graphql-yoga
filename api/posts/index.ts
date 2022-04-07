@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { fetchAPI } from "../../lib/base";
+import { fetchAPI } from "@lib/base";
 
 interface Post {
   id: string;

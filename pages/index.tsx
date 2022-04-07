@@ -1,11 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { usePosts } from "../api/posts";
+import { usePosts } from "@api/posts";
 import styles from "../styles/Home.module.css";
-
+import { Button, Pane, Text, majorScale, CornerDialog } from "evergreen-ui";
+import { useState } from "react";
 const Home: NextPage = () => {
   const { data, isLoading } = usePosts();
-
+  const [isShown, setIsShown] = useState(false);
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -19,12 +20,26 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
+        <Button appearance="primary">Click me!</Button>
+        <Text>This is a clickable Button</Text>
         {data?.map((post) => (
           <div className={styles.post} key={post.id}>
             <h2>{post.title}</h2>
             <p>{post.content}</p>
           </div>
         ))}
+        <>
+          <CornerDialog
+            title="Welcome to this new feature"
+            isShown={isShown}
+            onCloseComplete={() => setIsShown(false)}>
+            The corner dialog component is used for new feature announcements
+            and feedback requests from the user.
+          </CornerDialog>
+          <Button onClick={() => setIsShown(true)}>
+            Show “Learn More” Corner Dialog
+          </Button>
+        </>
       </main>
     </div>
   );

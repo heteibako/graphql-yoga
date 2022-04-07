@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { createServer } from "@graphql-yoga/node";
 import { NextApiRequest, NextApiResponse } from "next";
-import { schema } from "../../Schemas";
+import { schema } from "@schemas/index";
 
 const server = createServer<{
   req: NextApiRequest;
@@ -11,8 +11,6 @@ const server = createServer<{
   endpoint: "/api/graphql",
   schema,
 });
-
-// connectDB();
 
 export const config = {
   api: {
