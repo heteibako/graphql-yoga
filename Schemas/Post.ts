@@ -13,6 +13,7 @@ export const postTypeDefs = /* GraphQL */ `
     imagePath: String
     userId: String!
     user: User
+    comments: [Comment]
   }
   type Mutation {
     addPost(title: String!, content: String!, userId: String!): Post!
@@ -21,8 +22,6 @@ export const postTypeDefs = /* GraphQL */ `
 `;
 
 prisma.$use(async (params, next) => {
-  console.log(params);
-
   if (params.model == "Post" && params.action == "create") {
     // Logic only runs for delete action and Post model
     console.log("Post created");
@@ -40,6 +39,21 @@ export const postResolvers = {
               id: true,
               name: true,
               email: true,
+            },
+          },
+          comments: {
+            select: {
+              id: true,
+              content: true,
+              postId: true,
+              userId: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
             },
           },
         },
