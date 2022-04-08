@@ -6,7 +6,7 @@ import { userResolvers, userTypeDefs } from "./User";
 const typeDefs = [postTypeDefs, userTypeDefs, commentTypeDefs];
 const resolvers = [postResolvers, userResolvers, commentResolvers];
 
-export const schemaAll = makeExecutableSchema({
+export const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
