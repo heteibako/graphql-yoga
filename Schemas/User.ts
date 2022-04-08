@@ -62,7 +62,6 @@ export const userResolvers = {
         password: string;
       }
     ) => {
-      const salt = await bcrypt.genSalt(10);
       const user = await prisma.user.create({
         data: {
           name: args.name,
