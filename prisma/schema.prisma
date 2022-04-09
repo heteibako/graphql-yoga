@@ -28,6 +28,8 @@ model User {
   updatedAt DateTime? @map("updatedAt") @db.Date
   posts     Post[]
   comments  Comment[]
+  Account   Account[]
+  Session   Session[]
 }
 
 model Comment {
@@ -39,4 +41,40 @@ model Comment {
   postId    String    @db.ObjectId
   user      User?     @relation(fields: [userId], references: [id])
   userId    String?   @db.ObjectId
+}
+
+model Account {
+  id                String  @id @map("_id") @db.ObjectId
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
