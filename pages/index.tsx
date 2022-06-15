@@ -3,18 +3,14 @@ import Head from "next/head";
 import { usePosts } from "@api/posts";
 import styles from "../styles/Home.module.css";
 // import { Button, Pane, Text, majorScale, CornerDialog } from "evergreen-ui";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 const Home: NextPage = () => {
   const { data, isLoading } = usePosts();
   const [isShown, setIsShown] = useState(false);
 
-  const { data: session } = useSession();
   if (isLoading) {
     return <p>Loading...</p>;
   }
-
-  console.log(session);
 
   return (
     <div className={styles.container}>
@@ -27,7 +23,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         {/* <Button appearance="primary">Click me!</Button> */}
         {/* <Text>This is a clickable Button</Text> */}
-        <h1>Logged in as {session?.user.name}</h1>
+
         {data?.map((post) => (
           <div className={styles.post} key={post.id}>
             <h2>{post.title}</h2>
